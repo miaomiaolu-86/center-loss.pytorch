@@ -1,7 +1,12 @@
 import os
 import argparse
 
-import torch
+#导入pytorch各种功能和工具
+import torch   
+'''
+批训练，把数据变成一小批一小批数据进行训练。
+DataLoader用来包装所使用的数据，每次抛出一批数据
+'''
 from torch.utils.data import DataLoader
 from torchvision import transforms
 import numpy as np
