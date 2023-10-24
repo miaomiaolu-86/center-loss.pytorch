@@ -6,17 +6,17 @@ from device import device
 class FaceModel(nn.Module):
 
     '''
-    初始化每个类的中心点
+    初始化每个类的中心点center
     num_classes个类
     每个样本特征维度是feature_dim
     '''
     def __init__(self, num_classes, feature_dim):
+        #保留同名父类方法的功能
         super().__init__()
         self.num_classes = num_classes
         self.feature_dim = feature_dim
 
         '''
-        定义类的中心点center
         将数据copy到GPU运行
         在(num_classes, feature_dim)均匀分布种取随机数减0.5，×2，作为center的值
         定义分类器，将全连接层输出的多维数据变换成1维
