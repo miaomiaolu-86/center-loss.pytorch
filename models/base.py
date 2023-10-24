@@ -5,7 +5,8 @@ from device import device
 
 class FaceModel(nn.Module):
 
-    '''初始化每个类的中心点
+    '''
+    初始化每个类的中心点
     num_classes个类
     每个样本特征维度是feature_dim
     '''
