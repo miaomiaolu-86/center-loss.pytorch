@@ -2,6 +2,7 @@
 from torchvision import transforms
 
 '''
+Compose()将下列操作整合到一起：
 将torch.tensor 转换为PIL图像
 图像尺寸转换到给定尺寸
 以0.5概率水平翻转给定的PIL图像
