@@ -16,9 +16,10 @@ class FaceModel(nn.Module):
 
         '''
         定义类的中心点center
+        将数据copy到GPU运行
+        在(num_classes, feature_dim)均匀分布种取随机数减0.5，×2，作为center的值
         定义分类器，将全连接层输出的多维数据变换成1维
         '''
         if num_classes:
-            self.register_buffer('centers', (
-                torch.rand(num_classes, feature_dim).to(device) - 0.5) * 2)
+            self.register_buffer('centers', (torch.rand(num_classes, feature_dim).to(device) - 0.5) * 2)
             self.classifier = nn.Linear(self.feature_dim, num_classes)
