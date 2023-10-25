@@ -19,7 +19,9 @@ def create_datasets(dataroot, train_val_split=0.9):
 
     #列出目录下所有文件
     dataroot_files = os.listdir(dataroot)
+    #获取路径最后一个/后的字符串
     data_tarball_file = DATASET_TARBALL.split('/')[-1]
+    #获取路径第一个.之前的字符串
     data_dir_name = data_tarball_file.split('.')[0]
 
     if data_dir_name not in dataroot_files:
