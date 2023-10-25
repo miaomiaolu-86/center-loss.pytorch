@@ -1,6 +1,6 @@
 import os
+#导入命令行参数标准库
 import argparse
-
 #导入pytorch各种功能和工具
 import torch   
 '''
@@ -99,7 +99,7 @@ def train(args):
     #选择运行设备
     model = model_class(num_classes).to(device)
 
-    #
+    #设置梯度？？？
     trainables_wo_bn = [param for name, param in model.named_parameters() if
                         param.requires_grad and 'bn' not in name]
     trainables_only_bn = [param for name, param in model.named_parameters() if
@@ -133,6 +133,9 @@ def evaluate(args):
     log_dir = get_log_dir(args)
     model_class = get_model_class(args)
 
+    '''拼接目录，读取pairs.txt文件
+    如无文件，则下载一个文件
+    '''
     pairs_path = args.pairs if args.pairs else \
         os.path.join(dataset_dir, 'pairs.txt')
 
