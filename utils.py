@@ -8,7 +8,7 @@ import cv2
 import requests
 import matplotlib.pyplot as plt
 
-
+#获取文件路径
 def download(dir, url, dist=None):
     #获取url最后一个/后的字符串
     dist = dist if dist else url.split('/')[-1]
@@ -45,16 +45,21 @@ def download(dir, url, dist=None):
     print('Downloaded {}'.format(dist))
     return download_path
 
-
+#读取图片
 def image_loader(image_path):
     return cv2.imread(image_path)
 
-
+#画图
 def generate_roc_curve(fpr, tpr, path):
+    #判断长度是否是0，是0触发异常
     assert len(fpr) == len(tpr)
 
+    #创建一个图形
     fig = plt.figure()
+    #设置X、Y轴标签
     plt.xlabel('FPR')
     plt.ylabel('TPR')
+    #画图
     plt.plot(fpr, tpr)
+    #将图形保存为文件
     fig.savefig(path, dpi=fig.dpi)
