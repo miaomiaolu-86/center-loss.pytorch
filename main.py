@@ -29,12 +29,14 @@ def main(args):
     else:
         train(args)
 
-
+#获取数据集目录
 def get_dataset_dir(args):
+    #将路径字符串中的波浪线（~）扩展为用户的主目录，提供跨平台路径展开
     home = os.path.expanduser("~")
+    #获取数据集路径
     dataset_dir = args.dataset_dir if args.dataset_dir else os.path.join(
         home, 'datasets', 'lfw')
-
+#判断路径是否是目录，不是目录的话，创造一个目录
     if not os.path.isdir(dataset_dir):
         os.mkdir(dataset_dir)
 
@@ -42,6 +44,7 @@ def get_dataset_dir(args):
 
 
 def get_log_dir(args):
+    #去掉文件名，返回目录
     log_dir = args.log_dir if args.log_dir else os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'logs')
 
@@ -50,7 +53,7 @@ def get_log_dir(args):
 
     return log_dir
 
-#选择模型训练使用的网络
+#根据参数量，选择模型训练使用的网络类型
 def get_model_class(args):
     if args.arch == 'resnet18':
         model_class = Resnet18FaceModel
@@ -61,8 +64,11 @@ def get_model_class(args):
 
     return model_class
 
-
+'''
+训练
+'''
 def train(args):
+    #初始化变量
     dataset_dir = get_dataset_dir(args)
     log_dir = get_log_dir(args)
     model_class = get_model_class(args)
@@ -74,6 +80,7 @@ def train(args):
     validation_dataset = Dataset(
         validation_set, transform_for_infer(model_class.IMAGE_SHAPE))
 
+    #加载训练数据，每一批图片打乱顺序
     training_dataloader = torch.utils.data.DataLoader(
         training_dataset,
         batch_size=args.batch_size,
@@ -81,6 +88,7 @@ def train(args):
         shuffle=True
     )
 
+    #加载验证数据，无需打乱顺序
     validation_dataloader = torch.utils.data.DataLoader(
         validation_dataset,
         batch_size=args.batch_size,
@@ -88,18 +96,24 @@ def train(args):
         shuffle=False
     )
 
+    #选择运行设备
     model = model_class(num_classes).to(device)
 
+    #
     trainables_wo_bn = [param for name, param in model.named_parameters() if
                         param.requires_grad and 'bn' not in name]
     trainables_only_bn = [param for name, param in model.named_parameters() if
                           param.requires_grad and 'bn' in name]
 
+    '''
+    构建一个优化器
+    momentum=0.9，动量加速优化'''
     optimizer = torch.optim.SGD([
         {'params': trainables_wo_bn, 'weight_decay': 0.0001},
         {'params': trainables_only_bn}
     ], lr=args.lr, momentum=0.9)
 
+    #进行训练
     trainer = Trainer(
         optimizer,
         model,
@@ -111,7 +125,9 @@ def train(args):
     )
     trainer.train()
 
-
+'''
+测试
+'''
 def evaluate(args):
     dataset_dir = get_dataset_dir(args)
     log_dir = get_log_dir(args)
@@ -166,7 +182,10 @@ def evaluate(args):
     print('Model accuracy is {}'.format(accuracy))
     print('ROC curve generated at {}'.format(roc_file))
 
+'''
+验证
 
+'''
 def verify(args):
     dataset_dir = get_dataset_dir(args)
     log_dir = get_log_dir(args)
