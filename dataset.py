@@ -73,15 +73,18 @@ def create_datasets(dataroot, train_val_split=0.9):
 
 class Dataset(data.Dataset):
 
+    #初始化实例
     def __init__(self, datasets, transform=None, target_transform=None):
         self.datasets = datasets
         self.num_classes = len(datasets)
         self.transform = transform
         self.target_transform = target_transform
 
+    #获取数据集大小
     def __len__(self):
         return len(self.datasets)
 
+    #读取图片序号
     def __getitem__(self, index):
         image = image_loader(self.datasets[index][0])
         if self.transform:
