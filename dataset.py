@@ -12,6 +12,7 @@ DATASET_TARBALL = "http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz"
 PAIRS_TRAIN = "http://vis-www.cs.umass.edu/lfw/pairsDevTrain.txt"
 PAIRS_VAL = "http://vis-www.cs.umass.edu/lfw/pairsDevTest.txt"
 
+#构建训练和验证数据集
 def create_datasets(dataroot, train_val_split=0.9):
     #判断给定路径是否为目录
     if not os.path.isdir(dataroot):
@@ -19,32 +20,47 @@ def create_datasets(dataroot, train_val_split=0.9):
 
     #列出目录下所有文件
     dataroot_files = os.listdir(dataroot)
-    #获取路径最后一个/后的字符串
+    #获取路径最后一个/后的字符串：lfw-deepfunneled.tgz
     data_tarball_file = DATASET_TARBALL.split('/')[-1]
-    #获取路径第一个.之前的字符串
+    #获取data_tarball_file第一个.之前的字符串：lfw-deepfunneled
+    #获取数据集文件名称
     data_dir_name = data_tarball_file.split('.')[0]
 
+    '''
+    判断数据集文件是否在给定路径的文件目录里
+    不在的话，重新下载并解压文件到目录
+    '''
     if data_dir_name not in dataroot_files:
         if data_tarball_file not in dataroot_files:
             tarball = download(dataroot, DATASET_TARBALL)
         with tarfile.open(tarball, 'r') as t:
             t.extractall(dataroot)
 
+    #拼接路径，获取文件目录
     images_root = os.path.join(dataroot, 'lfw-deepfunneled')
+    #列出该文件下所有文件/文件夹
     names = os.listdir(images_root)
+    #判断目录下文件是否为空
     if len(names) == 0:
         raise RuntimeError('Empty dataset')
 
+    #初始化空的训练和验证数据集
     training_set = []
     validation_set = []
+    #enumerate()将数据组合为一个索引序列，同时列出数据和数据下标
     for klass, name in enumerate(names):
         def add_class(image):
+            #拼接含有数据和数据下标的图像路径
             image_path = os.path.join(images_root, name, image)
             return (image_path, klass, name)
 
+        #列出所有具体名字的图像
         images_of_person = os.listdir(os.path.join(images_root, name))
+        #图像大小
         total = len(images_of_person)
 
+        '''图像大小*0.9，向上取整作为训练数据集
+        图像大小*0.9，向下取整作为验证数据集'''
         training_set += map(
                 add_class,
                 images_of_person[:ceil(total * train_val_split)])
