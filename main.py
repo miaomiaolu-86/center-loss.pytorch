@@ -142,15 +142,19 @@ def evaluate(args):
     if not os.path.isfile(pairs_path):
         download(dataset_dir, 'http://vis-www.cs.umass.edu/lfw/pairs.txt')
 
+    #加载数据集
     dataset = LFWPairedDataset(
         dataset_dir, pairs_path, transform_for_infer(model_class.IMAGE_SHAPE))
     dataloader = DataLoader(dataset, batch_size=args.batch_size, num_workers=4)
     model = model_class(False).to(device)
 
+    #加载模型参数
     checkpoint = torch.load(args.evaluate)
     model.load_state_dict(checkpoint['state_dict'], strict=False)
+    #不更新当前模型参数
     model.eval()
 
+    #设置全0张量
     embedings_a = torch.zeros(len(dataset), model.FEATURE_DIM)
     embedings_b = torch.zeros(len(dataset), model.FEATURE_DIM)
     matches = torch.zeros(len(dataset), dtype=torch.uint8)
@@ -172,6 +176,10 @@ def evaluate(args):
         matches[start:end] = batched_matches.data
 
     thresholds = np.arange(0, 4, 0.1)
+    '''
+    计算两个张量差值的平方
+    对张量按行求和
+    '''
     distances = torch.sum(torch.pow(embedings_a - embedings_b, 2), dim=1)
 
     tpr, fpr, accuracy, best_thresholds = compute_roc(
@@ -187,7 +195,6 @@ def evaluate(args):
 
 '''
 验证
-
 '''
 def verify(args):
     dataset_dir = get_dataset_dir(args)
@@ -195,8 +202,10 @@ def verify(args):
     model_class = get_model_class(args)
 
     model = model_class(False).to(device)
+    #加载模型参数
     checkpoint = torch.load(args.verify_model)
     model.load_state_dict(checkpoint['state_dict'], strict=False)
+    #不更新模型参数
     model.eval()
 
     image_a, image_b = args.verify_images.split(',')
@@ -214,7 +223,9 @@ def verify(args):
 
 if __name__ == '__main__':
 
+    #创建解析器
     parser = argparse.ArgumentParser(description='center loss example')
+    #添加参数
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                         help='input batch size for training (default: 256)')
     parser.add_argument('--log_dir', type=str,
@@ -250,5 +261,6 @@ if __name__ == '__main__':
                         help='verify 2 images of face belong to one person,'
                              'split image pathes by comma')
 
+    #解析参数
     args = parser.parse_args()
     main(args)
