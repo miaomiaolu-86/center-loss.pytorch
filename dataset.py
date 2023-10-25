@@ -13,9 +13,11 @@ PAIRS_TRAIN = "http://vis-www.cs.umass.edu/lfw/pairsDevTrain.txt"
 PAIRS_VAL = "http://vis-www.cs.umass.edu/lfw/pairsDevTest.txt"
 
 def create_datasets(dataroot, train_val_split=0.9):
+    #判断给定路径是否为目录
     if not os.path.isdir(dataroot):
         os.mkdir(dataroot)
 
+    #列出目录下所有文件
     dataroot_files = os.listdir(dataroot)
     data_tarball_file = DATASET_TARBALL.split('/')[-1]
     data_dir_name = data_tarball_file.split('.')[0]
