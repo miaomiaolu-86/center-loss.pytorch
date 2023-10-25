@@ -50,7 +50,7 @@ def get_log_dir(args):
 
     return log_dir
 
-
+#选择模型训练使用的网络
 def get_model_class(args):
     if args.arch == 'resnet18':
         model_class = Resnet18FaceModel
