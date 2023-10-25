@@ -1,3 +1,4 @@
+#Python标准库os库，包含几百个函数,常用路径操作、进程管理、环境参数等几类
 import os
 from math import ceil
 
@@ -11,6 +12,9 @@ import matplotlib.pyplot as plt
 def download(dir, url, dist=None):
     dist = dist if dist else url.split('/')[-1]
     print('Start to Download {} to {} from {}'.format(dist, dir, url))
+    
+    '''os.path子库，处理文件路径及信息
+    获得文件路径'''
     download_path = os.path.join(dir, dist)
     if os.path.isfile(download_path):
         print('File {} already downloaded'.format(download_path))
